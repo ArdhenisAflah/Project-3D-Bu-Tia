@@ -1,3 +1,5 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class AsteroidSpawner : MonoBehaviour
@@ -25,7 +27,10 @@ public class AsteroidSpawner : MonoBehaviour
 
     private float spawnTimer = 0f;
     private float waveTimer = 0f;
+    public int waveCounter = 0;
     private int activeCount = 0;
+
+    public TextMeshProUGUI waveText;
 
     void Update()
     {
@@ -71,10 +76,20 @@ public class AsteroidSpawner : MonoBehaviour
 
     void SpawnWave()
     {
+        waveCounter++;
         Debug.Log("Asteroid Wave!");
+        StartCoroutine(WaveShowTextAnim());
         int toSpawn = Mathf.Min(asteroidsPerWave, maxAsteroids - activeCount);
         for (int i = 0; i < toSpawn; i++)
             SpawnAsteroid();
+    }
+
+    IEnumerator WaveShowTextAnim()
+    {
+        waveText.gameObject.SetActive(true);
+        waveText.text = $"WAVE {waveCounter}!";
+        yield return new WaitForSeconds(2f);
+        waveText.gameObject.SetActive(false);
     }
 
     void SpawnAsteroid()

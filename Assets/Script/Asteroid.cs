@@ -36,6 +36,10 @@ public class Asteroid : MonoBehaviour, IPoolable
     private float popTimer = 0f;
     private bool isPopping = true;
     private float targetScale;
+
+    [Header("Rewards")]
+    public int scoreValue;       // Skor yang didapat saat asteroid ini kena
+    public float energyValue;    // Energi yang didapat saat asteroid ini kena
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -83,7 +87,10 @@ public class Asteroid : MonoBehaviour, IPoolable
         // Kena spaceship atau projectile
         if (other.CompareTag("Player") || other.CompareTag("Bullet"))
         {
-            ScoreManager.Instance.AddScore(10);
+            // Tambah score
+            ScoreManager.Instance.AddScore(scoreValue);
+            // Tambah energi
+            EnergyManager.Instance.AddEnergy(energyValue);
             ReturnToPool();
         }
     }
