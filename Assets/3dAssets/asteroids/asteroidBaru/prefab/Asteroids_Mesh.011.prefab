@@ -180,3 +180,5 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   poolTag: Asteroid2
+  scoreValue: 20
+  energyValue: 10
