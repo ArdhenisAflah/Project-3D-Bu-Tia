@@ -57,6 +57,7 @@ Material:
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 2
+    - _BlendModePreserveSpecular: 1
     - _CastShadows: 1
     - _Cull: 2
     - _DotsNoiseScale: 30
@@ -64,9 +65,11 @@ Material:
     - _DstBlend: 1
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _ReceiveShadows: 1
     - _ScrollingTilingSize: 18
     - _SrcBlend: 5
     - _Surface: 1
+    - _WorkflowMode: 1
     - _ZTest: 4
     - _ZWrite: 0
     - _ZWriteControl: 0

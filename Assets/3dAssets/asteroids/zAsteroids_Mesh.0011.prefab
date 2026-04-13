@@ -169,6 +169,8 @@ MonoBehaviour:
   poolTag: Asteroid
   scoreValue: 10
   energyValue: 5
+  ExplosionEffect: {fileID: 8902980400698062611, guid: 9b842fc74d8634c67b5f2a7511ac2ea4,
+    type: 3}
 --- !u!135 &8186883803435705607
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -40,6 +40,9 @@ public class Asteroid : MonoBehaviour, IPoolable
     [Header("Rewards")]
     public int scoreValue;       // Skor yang didapat saat asteroid ini kena
     public float energyValue;    // Energi yang didapat saat asteroid ini kena
+
+
+    public GameObject ExplosionEffect;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -87,6 +90,11 @@ public class Asteroid : MonoBehaviour, IPoolable
         // Kena spaceship atau projectile
         if (other.CompareTag("Player") || other.CompareTag("Bullet"))
         {
+            //Add Explosion Effect
+            if (ExplosionEffect != null)
+            {
+                Destroy(Instantiate(ExplosionEffect, transform.position, Quaternion.identity), 1);
+            }
             // Tambah score
             ScoreManager.Instance.AddScore(scoreValue);
             // Tambah energi

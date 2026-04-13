@@ -182,3 +182,5 @@ MonoBehaviour:
   poolTag: Asteroid3
   scoreValue: 20
   energyValue: 10
+  ExplosionEffect: {fileID: 8902980400698062611, guid: 9b842fc74d8634c67b5f2a7511ac2ea4,
+    type: 3}

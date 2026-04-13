@@ -48,6 +48,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 8
   poolTag: Enemy
+  ExplosionEffect: {fileID: 8902980400698062611, guid: 9b842fc74d8634c67b5f2a7511ac2ea4,
+    type: 3}
 --- !u!65 &2775695616055003003
 BoxCollider:
   m_ObjectHideFlags: 0
