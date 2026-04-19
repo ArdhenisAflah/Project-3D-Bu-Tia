@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 
 /// <summary>
 /// Manages the player's energy resource.
@@ -32,7 +33,7 @@ public class EnergyManager : MonoBehaviour
     [Header("Events (opsional)")]
     public UnityEngine.Events.UnityEvent onEnergyFull;    // Panggil event saat penuh
     public UnityEngine.Events.UnityEvent onEnergyEmpty;   // Panggil event saat kosong
-
+    private Coroutine SmoothDampSliderC;
     private bool wasFull = false;
     private bool wasEmpty = true;
 
@@ -93,31 +94,53 @@ public class EnergyManager : MonoBehaviour
         float ratio = currentEnergy / maxEnergy;
 
         // Slider
-        if (energySlider != null)
-            energySlider.value = currentEnergy;
+        // if (energySlider != null)
+        //     energySlider.value = currentEnergy;
 
         // Image fill
-        if (energyFillImage != null)
-            energyFillImage.fillAmount = ratio;
+        if (SmoothDampSliderC != null)
+        {
+            StopCoroutine(SmoothDampSliderC);
+        }
+
+        SmoothDampSliderC = StartCoroutine(SmoothDampSlider(currentEnergy));
+
 
         // Text label
         if (energyText != null)
             energyText.text = $"{Mathf.RoundToInt(currentEnergy)} / {Mathf.RoundToInt(maxEnergy)}";
 
         // Color feedback
-        Color targetColor = ratio <= lowThreshold ? colorLow
-                          : ratio <= midThreshold ? colorMid
-                          : colorFull;
+        // Color targetColor = ratio <= lowThreshold ? colorLow
+        //                   : ratio <= midThreshold ? colorMid
+        //                   : colorFull;
 
+        // if (energySlider != null)
+        // {
+        // Cari Fill area dari slider
+        // var fill = energySlider.fillRect?.GetComponent<Image>();
+        // if (fill != null) fill.color = targetColor;
+        // }
+
+        // if (energyFillImage != null)
+        // energyFillImage.color = targetColor;
+    }
+    private float currentVelocity = 0.0f;
+    IEnumerator SmoothDampSlider(float target)
+    {
         if (energySlider != null)
         {
-            // Cari Fill area dari slider
-            var fill = energySlider.fillRect?.GetComponent<Image>();
-            if (fill != null) fill.color = targetColor;
-        }
 
-        if (energyFillImage != null)
-            energyFillImage.color = targetColor;
+
+            float timeFilling = 0.5f;
+
+            while (Mathf.Abs(energySlider.value - target) > 0.001f)
+            {
+                energySlider.value = Mathf.SmoothDamp(energySlider.value, target, ref currentVelocity, timeFilling);
+                yield return null;
+            }
+            energySlider.value = target;
+        }
     }
 
     void CheckEvents()
