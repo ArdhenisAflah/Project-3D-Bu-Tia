@@ -3,11 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
-/// <summary>
-/// Manages the player's energy resource.
-/// Attach to an empty GameObject "EnergyManager" in the scene.
-/// Mirrors the pattern of ScoreManager for consistency.
-/// </summary>
 public class EnergyManager : MonoBehaviour
 {
     public static EnergyManager Instance;
@@ -17,46 +12,43 @@ public class EnergyManager : MonoBehaviour
     public float currentEnergy = 0f;
 
     [Header("UI References")]
-    [Tooltip("Drag Image (fill) atau Slider ke sini untuk energy bar")]
-    public Slider energySlider;          // Pakai Slider UI
-    public Image energyFillImage;        // Atau pakai Image dengan Image Type = Filled
-    public TextMeshProUGUI energyText;   // Label opsional, contoh: "45 / 100"
+    public Slider energySlider;
+    public TextMeshProUGUI energyText;
 
-    [Header("Color Feedback")]
-    [Tooltip("Warna bar saat energi rendah, sedang, penuh")]
-    public Color colorLow = new Color(0.9f, 0.2f, 0.2f); // merah
-    public Color colorMid = new Color(0.9f, 0.7f, 0.1f); // kuning
-    public Color colorFull = new Color(0.2f, 0.8f, 0.3f); // hijau
-    public float lowThreshold = 0.25f;  // di bawah 25% = merah
-    public float midThreshold = 0.60f;  // di bawah 60% = kuning
+    [Header("Shield")]
+    public Transform shieldTransform; // drag shield object
 
-    [Header("Events (opsional)")]
-    public UnityEngine.Events.UnityEvent onEnergyFull;    // Panggil event saat penuh
-    public UnityEngine.Events.UnityEvent onEnergyEmpty;   // Panggil event saat kosong
-    private Coroutine SmoothDampSliderC;
+    [Header("Events")]
+    public UnityEngine.Events.UnityEvent onEnergyFull;
+    public UnityEngine.Events.UnityEvent onEnergy50;
+    public UnityEngine.Events.UnityEvent onEnergy25;
+    public UnityEngine.Events.UnityEvent onEnergyEmpty;
+
+    private Coroutine smoothDampSliderC;
+    private float currentVelocity = 0f;
+
     private bool wasFull = false;
+    private bool was50 = false;
+    private bool was25 = false;
     private bool wasEmpty = true;
 
     void Awake()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     void Start()
     {
-        // Inisialisasi slider max
         if (energySlider != null)
             energySlider.maxValue = maxEnergy;
 
         UpdateUI();
+        CheckEvents();
     }
 
     // ── Public API ────────────────────────────────────────────
 
-    /// <summary>Tambah energi. Dipanggil dari Asteroid.cs saat kena player/bullet.</summary>
     public void AddEnergy(float amount)
     {
         currentEnergy = Mathf.Clamp(currentEnergy + amount, 0f, maxEnergy);
@@ -64,7 +56,6 @@ public class EnergyManager : MonoBehaviour
         CheckEvents();
     }
 
-    /// <summary>Kurangi energi. Panggil saat energi dikonsumsi (misalnya aktifkan shield).</summary>
     public void UseEnergy(float amount)
     {
         currentEnergy = Mathf.Clamp(currentEnergy - amount, 0f, maxEnergy);
@@ -72,92 +63,89 @@ public class EnergyManager : MonoBehaviour
         CheckEvents();
     }
 
-    /// <summary>Cek apakah energi cukup untuk dipakai.</summary>
     public bool HasEnergy(float amount)
     {
         return currentEnergy >= amount;
     }
 
-    /// <summary>Reset energi ke nol (misalnya saat game over / restart).</summary>
     public void ResetEnergy()
     {
         currentEnergy = 0f;
         wasFull = false;
+        was50 = false;
+        was25 = false;
         wasEmpty = true;
         UpdateUI();
+        CheckEvents();
     }
 
-    // ── Internal ──────────────────────────────────────────────
+    // ── UI ────────────────────────────────────────────────────
 
     void UpdateUI()
     {
-        float ratio = currentEnergy / maxEnergy;
+        if (smoothDampSliderC != null)
+            StopCoroutine(smoothDampSliderC);
+        smoothDampSliderC = StartCoroutine(SmoothDampSlider(currentEnergy));
 
-        // Slider
-        // if (energySlider != null)
-        //     energySlider.value = currentEnergy;
-
-        // Image fill
-        if (SmoothDampSliderC != null)
-        {
-            StopCoroutine(SmoothDampSliderC);
-        }
-
-        SmoothDampSliderC = StartCoroutine(SmoothDampSlider(currentEnergy));
-
-
-        // Text label
         if (energyText != null)
             energyText.text = $"{Mathf.RoundToInt(currentEnergy)} / {Mathf.RoundToInt(maxEnergy)}";
-
-        // Color feedback
-        // Color targetColor = ratio <= lowThreshold ? colorLow
-        //                   : ratio <= midThreshold ? colorMid
-        //                   : colorFull;
-
-        // if (energySlider != null)
-        // {
-        // Cari Fill area dari slider
-        // var fill = energySlider.fillRect?.GetComponent<Image>();
-        // if (fill != null) fill.color = targetColor;
-        // }
-
-        // if (energyFillImage != null)
-        // energyFillImage.color = targetColor;
     }
-    private float currentVelocity = 0.0f;
+
     IEnumerator SmoothDampSlider(float target)
     {
-        if (energySlider != null)
+        if (energySlider == null) yield break;
+
+        float smoothTime = 0.5f;
+        while (Mathf.Abs(energySlider.value - target) > 0.001f)
         {
-
-
-            float timeFilling = 0.5f;
-
-            while (Mathf.Abs(energySlider.value - target) > 0.001f)
-            {
-                energySlider.value = Mathf.SmoothDamp(energySlider.value, target, ref currentVelocity, timeFilling);
-                yield return null;
-            }
-            energySlider.value = target;
+            energySlider.value = Mathf.SmoothDamp(
+                energySlider.value, target, ref currentVelocity, smoothTime);
+            yield return null;
         }
+        energySlider.value = target;
     }
+
+    // ── Events ────────────────────────────────────────────────
 
     void CheckEvents()
     {
-        bool isFull = currentEnergy >= maxEnergy;
-        bool isEmpty = currentEnergy <= 0f;
+        float ratio = currentEnergy / maxEnergy;
 
+        bool isFull = ratio >= 1f;
+        bool is50 = ratio <= 0.5f;
+        bool is25 = ratio <= 0.25f;
+        bool isEmpty = ratio <= 0f;
+
+        // Shield — aktif kalau ada energy, mati kalau kosong
+        if (shieldTransform != null)
+            shieldTransform.gameObject.SetActive(!isEmpty);
+
+        // Full
         if (isFull && !wasFull)
         {
-            wasFull = true;
+            wasFull = true; was50 = false; was25 = false; wasEmpty = false;
             onEnergyFull?.Invoke();
         }
         if (!isFull) wasFull = false;
 
+        // 50%
+        if (is50 && !was50 && !is25 && !isEmpty)
+        {
+            was50 = true; wasFull = false;
+            onEnergy50?.Invoke();
+        }
+
+        // 25%
+        if (is25 && !was25 && !isEmpty)
+        {
+            was25 = true; was50 = false;
+            onEnergy25?.Invoke();
+        }
+
+        // Empty
         if (isEmpty && !wasEmpty)
         {
-            wasEmpty = true;
+            wasEmpty = true; was25 = false;
             onEnergyEmpty?.Invoke();
         }
         if (!isEmpty) wasEmpty = false;

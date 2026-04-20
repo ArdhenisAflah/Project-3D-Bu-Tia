@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -15,7 +16,6 @@ public class Asteroid : MonoBehaviour, IPoolable
     public float driftAmplitude = 0.8f;
     public float driftFrequency = 0.8f;
     public float rotationSpeed = 15f;
-
 
 
     [Header("Pop Out Effect")]
@@ -40,8 +40,7 @@ public class Asteroid : MonoBehaviour, IPoolable
     [Header("Rewards")]
     public int scoreValue;       // Skor yang didapat saat asteroid ini kena
     public float energyValue;    // Energi yang didapat saat asteroid ini kena
-
-
+    public JenisAsteroid tipeAsteroid;
     public GameObject ExplosionEffect;
     void Awake()
     {
@@ -82,24 +81,30 @@ public class Asteroid : MonoBehaviour, IPoolable
         // Auto return ke pool setelah maxLifetime
         lifetime += Time.deltaTime;
         if (lifetime >= maxLifetime)
-            ReturnToPool();
+            Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider other)
     {
         // Kena spaceship atau projectile
-        if (other.CompareTag("Player") || other.CompareTag("Bullet"))
+        if (other.CompareTag("Shield") || other.CompareTag("Bullet"))
         {
-            //Add Explosion Effect
-            if (ExplosionEffect != null)
-            {
-                Destroy(Instantiate(ExplosionEffect, transform.position, Quaternion.identity), 1);
-            }
+            //add Crash Asteroid SFX
+            AudioManager.Instance.PlaySFX(2);
             // Tambah score
             ScoreManager.Instance.AddScore(scoreValue);
+            InventoryManager.Instance.AddAsteroid(1, tipeAsteroid);
             // Tambah energi
             EnergyManager.Instance.AddEnergy(energyValue);
-            ReturnToPool();
+            // Animasi Bagoyang kena tabrak spaceship.
+            other.GetComponent<MMF_Player>().PlayFeedbacks();
+            GetComponent<AsteroidShatter>().Shatter();
+            Destroy(gameObject);
+        }
+
+        if (other.CompareTag("Player"))
+        {
+            WinLoseManager.Instance.TriggerLose();
         }
     }
 
@@ -135,10 +140,10 @@ public class Asteroid : MonoBehaviour, IPoolable
     }
 
 
-    public void ReturnToPool()
-    {
-        ObjectPool.Instance.ReturnToPool(poolTag, gameObject);
-    }
+    // public void ReturnToPool()
+    // {
+    //     ObjectPool.Instance.ReturnToPool(poolTag, gameObject);
+    // }
 
 
 }

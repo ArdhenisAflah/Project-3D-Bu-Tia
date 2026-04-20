@@ -15,7 +15,7 @@ public class Movement : MonoBehaviour
     [Header("Boost Settings")]
     public float boostMultiplier = 2.5f;
     public float boostDuration = 3f;
-    public float boostCooldown = 5f;
+    public float boostCooldown = 3.5f;
 
     [Header("Cinemachine")]
     public CinemachineVirtualCamera virtualCamera;
@@ -49,8 +49,8 @@ public class Movement : MonoBehaviour
             virtualCamera = FindObjectOfType<CinemachineVirtualCamera>();
 
         // Pastikan Virtual Camera follow spaceship ini
-        if (virtualCamera != null)
-            virtualCamera.Follow = this.transform;
+        // if (virtualCamera != null)
+        //     virtualCamera.Follow = this.transform;
     }
 
     void Update()
@@ -134,11 +134,11 @@ public class Movement : MonoBehaviour
         }
     }
 
-    void OnGUI()
-    {
-        float speed = moveSpeed * (isBoosting ? boostMultiplier : 1f);
-        GUI.Label(new Rect(10, 10, 350, 20), $"Speed: {speed:F1}");
-        GUI.Label(new Rect(10, 30, 350, 20),
-            $"Boost: {(isBoosting ? $"ACTIVE ({boostTimer:F1}s)" : boostCooldownTimer > 0 ? $"Cooldown ({boostCooldownTimer:F1}s)" : "READY")}");
-    }
+    // void OnGUI()
+    // {
+    //     float speed = moveSpeed * (isBoosting ? boostMultiplier : 1f);
+    //     GUI.Label(new Rect(10, 10, 350, 20), $"Speed: {speed:F1}");
+    //     GUI.Label(new Rect(10, 30, 350, 20),
+    //         $"Boost: {(isBoosting ? $"ACTIVE ({boostTimer:F1}s)" : boostCooldownTimer > 0 ? $"Cooldown ({boostCooldownTimer:F1}s)" : "READY")}");
+    // }
 }

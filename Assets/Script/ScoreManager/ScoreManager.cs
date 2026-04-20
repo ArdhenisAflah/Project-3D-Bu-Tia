@@ -13,6 +13,11 @@ public class ScoreManager : MonoBehaviour
         Instance = this;
     }
 
+    public int GetScore()
+    {
+        return currentScore;
+    }
+
     public void AddScore(int amount)
     {
         currentScore += amount;
@@ -22,6 +27,6 @@ public class ScoreManager : MonoBehaviour
     void UpdateUI()
     {
         if (scoreText != null)
-            scoreText.text = "Score: " + currentScore;
+            scoreText.text = currentScore.ToString();
     }
 }

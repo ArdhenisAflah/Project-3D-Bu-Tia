@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -16,15 +17,31 @@ public class EnemyController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // Logika tabrakan (Ganti Tag sesuai kebutuhan)
-        if (other.CompareTag("Bullet") || other.CompareTag("MainStation") || other.CompareTag("Player"))
+        if (other.CompareTag("Bullet") || other.CompareTag("MainStation") || other.CompareTag("Player") || other.CompareTag("Shield"))
         {
 
+            if (other.CompareTag("MainStation"))
+            {
+                WinLoseManager.Instance.TriggerLose();
+            }
+            if (other.CompareTag("Player"))
+            {
+                WinLoseManager.Instance.TriggerLose();
+            }
+
+            if (other.CompareTag("Shield"))
+            {
+                EnergyManager.Instance.UseEnergy(20);
+                // Animasi Bagoyang kena tabrak spaceship.
+                other.gameObject.GetComponent<MMF_Player>().PlayFeedbacks();
+                ScoreManager.Instance.AddScore(20);
+            }
             //Add Explosion Effect
             if (ExplosionEffect != null)
             {
+                AudioManager.Instance.PlaySFX(1);
                 Destroy(Instantiate(ExplosionEffect, transform.position, Quaternion.identity), 1);
             }
-            ScoreManager.Instance.AddScore(20);
 
             ReturnToPool();
         }

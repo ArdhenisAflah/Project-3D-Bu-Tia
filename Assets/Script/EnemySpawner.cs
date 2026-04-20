@@ -27,27 +27,13 @@ public class EnemySpawner : MonoBehaviour
 
         // 1. Hitung musuh yang aktif (untuk membatasi maxEnemies)
         TrackActiveEnemies();
-
-        // 2. Logika Spawn Reguler (Batch)
-        spawnTimer += Time.deltaTime;
-        if (spawnTimer >= spawnInterval)
-        {
-            spawnTimer = 0f;
-            SpawnBatch();
-        }
-
-        // 3. Logika Wave Spawning
-        if (enableWaves)
-        {
-            waveTimer += Time.deltaTime;
-            if (waveTimer >= timeBetweenWaves)
-            {
-                waveTimer = 0f;
-                SpawnWave();
-            }
-        }
     }
-
+    public void SpawnWaveExternal(int amount)
+    {
+        int toSpawn = Mathf.Min(amount, maxEnemies - activeCount);
+        for (int i = 0; i < toSpawn; i++)
+            SpawnEnemy();
+    }
     void TrackActiveEnemies()
     {
         // Mencari semua objek dengan script EnemyController (sesuaikan nama script musuhmu)
@@ -58,22 +44,6 @@ public class EnemySpawner : MonoBehaviour
             if (e.gameObject.activeSelf) activeCount++;
     }
 
-    void SpawnBatch()
-    {
-        if (activeCount >= maxEnemies) return;
-
-        int toSpawn = Mathf.Min(spawnBatchSize, maxEnemies - activeCount);
-        for (int i = 0; i < toSpawn; i++)
-            SpawnEnemy();
-    }
-
-    void SpawnWave()
-    {
-        Debug.Log("Enemy Wave Incoming!");
-        int toSpawn = Mathf.Min(enemiesPerWave, maxEnemies - activeCount);
-        for (int i = 0; i < toSpawn; i++)
-            SpawnEnemy();
-    }
 
     void SpawnEnemy()
     {

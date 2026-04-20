@@ -8,6 +8,8 @@ TagManager:
   - Enemy
   - MainStation
   - Bullet
+  - Fracture
+  - Shield
   layers:
   - Default
   - TransparentFX
@@ -16,7 +18,7 @@ TagManager:
   - Water
   - UI
   - Asteroids
-  - 
+  - Fracture
   - 
   - 
   - 

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,27 +7,36 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private string StartPlayDestinationScene = "Gameplay";
 
     [Header("Panels")]
-    [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject mainMenuPanel;
+    [SerializeField] private GameObject howToPlayPanel; // drag panel How To Play
 
+    void Start()
+    {
+        // Pastikan panel tertutup di awal
+        howToPlayPanel.SetActive(false);
+    }
 
-
-    // Called by Play button
     public void OnPlayButton()
     {
+        AudioManager.Instance.PlaySFX(0);
         SceneManager.LoadScene(StartPlayDestinationScene);
     }
 
-    // Called by Settings button
-    public void OnSettingsButton()
+    public void OnHowToPlay()
     {
-        mainMenuPanel.SetActive(false);
-        settingsPanel.SetActive(true);
+        AudioManager.Instance.PlaySFX(0);
+        howToPlayPanel.SetActive(true); // popup muncul di atas
     }
 
-    // Called by Quit button
+    public void OnCloseHowToPlay()
+    {
+        AudioManager.Instance.PlaySFX(0);
+        howToPlayPanel.SetActive(false); // tutup panel
+    }
+
     public void OnQuitButton()
     {
+        AudioManager.Instance.PlaySFX(0);
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
