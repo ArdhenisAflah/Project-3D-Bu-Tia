@@ -20,6 +20,8 @@ public class EnemyController : MonoBehaviour
         if (other.CompareTag("Bullet") || other.CompareTag("MainStation") || other.CompareTag("Player") || other.CompareTag("Shield"))
         {
 
+
+
             if (other.CompareTag("MainStation"))
             {
                 WinLoseManager.Instance.TriggerLose();
@@ -31,6 +33,8 @@ public class EnemyController : MonoBehaviour
 
             if (other.CompareTag("Shield"))
             {
+
+                Destroy(GameObject.FindWithTag("arrowenem"));
                 EnergyManager.Instance.UseEnergy(20);
                 // Animasi Bagoyang kena tabrak spaceship.
                 other.gameObject.GetComponent<MMF_Player>().PlayFeedbacks();

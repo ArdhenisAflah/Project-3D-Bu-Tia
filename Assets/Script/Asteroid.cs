@@ -27,7 +27,7 @@ public class Asteroid : MonoBehaviour, IPoolable
 
     private Rigidbody rb;
     private float lifetime;
-    private float maxLifetime = 30f;
+    private float maxLifetime = 100f;
 
 
     private Vector3 originPos;
@@ -89,6 +89,7 @@ public class Asteroid : MonoBehaviour, IPoolable
         // Kena spaceship atau projectile
         if (other.CompareTag("Shield") || other.CompareTag("Bullet"))
         {
+            Destroy(GameObject.FindWithTag("arrowaste"));
             //add Crash Asteroid SFX
             AudioManager.Instance.PlaySFX(2);
             // Tambah score

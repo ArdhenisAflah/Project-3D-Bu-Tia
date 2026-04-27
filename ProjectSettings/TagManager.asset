@@ -10,6 +10,8 @@ TagManager:
   - Bullet
   - Fracture
   - Shield
+  - arrowaste
+  - arrowenem
   layers:
   - Default
   - TransparentFX
