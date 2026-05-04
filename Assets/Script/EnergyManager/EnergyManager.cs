@@ -47,7 +47,27 @@ public class EnergyManager : MonoBehaviour
         CheckEvents();
     }
 
+    /// <summary>
+    /// This function is called when the object becomes enabled and active.
+    /// </summary>
+    void OnEnable()
+    {
+        ChangeMode.onModeStatus += ShieldActiveOrNot;
+    }
+    /// <summary>
+    /// This function is called when the behaviour becomes disabled or inactive.
+    /// </summary>
+    void OnDisable()
+    {
+        ChangeMode.onModeStatus -= ShieldActiveOrNot;
+    }
+
     // ── Public API ────────────────────────────────────────────
+    public bool statusShield = true;
+    void ShieldActiveOrNot(bool status)
+    {
+        statusShield = status;
+    }
 
     public void AddEnergy(float amount)
     {
@@ -117,7 +137,7 @@ public class EnergyManager : MonoBehaviour
         bool isEmpty = ratio <= 0f;
 
         // Shield — aktif kalau ada energy, mati kalau kosong
-        if (shieldTransform != null)
+        if (shieldTransform != null && statusShield)
             shieldTransform.gameObject.SetActive(!isEmpty);
 
         // Full

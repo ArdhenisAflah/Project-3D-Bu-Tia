@@ -19,9 +19,6 @@ public class EnemyController : MonoBehaviour
         // Logika tabrakan (Ganti Tag sesuai kebutuhan)
         if (other.CompareTag("Bullet") || other.CompareTag("MainStation") || other.CompareTag("Player") || other.CompareTag("Shield"))
         {
-
-
-
             if (other.CompareTag("MainStation"))
             {
                 WinLoseManager.Instance.TriggerLose();
@@ -31,9 +28,14 @@ public class EnemyController : MonoBehaviour
                 WinLoseManager.Instance.TriggerLose();
             }
 
+            if (other.CompareTag("Bullet"))
+            {
+                Destroy(GameObject.FindWithTag("arrowenem"));
+                ScoreManager.Instance.AddScore(20);
+            }
+
             if (other.CompareTag("Shield"))
             {
-
                 Destroy(GameObject.FindWithTag("arrowenem"));
                 EnergyManager.Instance.UseEnergy(20);
                 // Animasi Bagoyang kena tabrak spaceship.

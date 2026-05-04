@@ -97,8 +97,17 @@ public class Asteroid : MonoBehaviour, IPoolable
             InventoryManager.Instance.AddAsteroid(1, tipeAsteroid);
             // Tambah energi
             EnergyManager.Instance.AddEnergy(energyValue);
-            // Animasi Bagoyang kena tabrak spaceship.
-            other.GetComponent<MMF_Player>().PlayFeedbacks();
+
+            if (other.CompareTag("Shield"))
+            {
+                // Animasi Bagoyang kena tabrak spaceship.
+                other.GetComponent<MMF_Player>().PlayFeedbacks();
+            }
+            if (other.CompareTag("Bullet"))
+            {
+                Destroy(other.gameObject);
+            }
+
             GetComponent<AsteroidShatter>().Shatter();
             Destroy(gameObject);
         }
